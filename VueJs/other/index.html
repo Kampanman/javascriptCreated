@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <!--b. 準備済みの値を出力-->
+    <p v-text="message"></p>
+    <p><a :href="url" target="_blank">アプリのページ</a></p>
+    <p>ドメイン名：{{ domain() }}</p>
+    <button v-on:click.once.prevent="fire">クリック！</button>
+    <p>{{ time }}</p>
+    <form>
+      <label for="name">氏名を入力してください：</label>
+      <input type="text" id="name" v-on:keyup.esc="clearName" v-model="name"><br>
+      <label for="man">男性</label><input type="radio" id="man" value="男性" v-model="gender" /> 
+      <label for="woman">女性</label><input type="radio" id="woman" value="女性" v-model="gender" /><br>
+      <label for="age">年齢を入力してください：</label>
+      <input type="number" id="age" min="0" max="119" v-on:keyup.esc="clearAge" v-model="age"><br>
+      <span>使用可能言語：</span>
+      <select v-model="language">
+        <option> - </option>
+        <option>日本語</option>
+        <option>英語</option>
+        <option>テクマク語</option>
+      </select><br>
+      <span>生年月日の元号： </span>
+        <label for="showa">昭和</label><input id="showa" type="radio" v-model="unit" v-bind:value="{name:'昭和', year:1925}"> 
+        <label for="heisei">平成</label><input id="heisei" type="radio" v-model="unit" v-bind:value="{name:'平成', year:1989}"> 
+        <label for="reiwa">令和</label><input id="reiwa" type="radio" v-model="unit" v-bind:value="{name:'令和', year:2019}"> 
+    </form>
+    <p>
+      <span>{{ name }}</span> / 
+      <span>{{ gender }}</span> / 
+      <span>{{ age }} 歳</span> /
+      <span>生年月日の元号： {{ unit.name }} / {{ unit.year }}</span>
+      <br>
+      <span>話せる言語：{{ language }}</span>
+    </p>
+    </div>
+    
+<script src="https://unpkg.com/vue@3.0.0/dist/vue.global.js"></script>
+<script>
+  // a. Vue.jsの機能を有効化
+Vue.createApp({
+  data: function() {
+    return {
+      message: '私の作成したアプリページです。',
+      url: 'http://empower-util.sakura.ne.jp/MemoryLinkers/myMemoryLinkers.php',
+      time: '',
+      name: 'ゲスト', // ←のように変数設定しないと「v-on:keyup.esc」が使えないようだ。
+      age: '30', // ←↑ これらは「v-model」で設定した変数。（v-modelは「双方向バインディング」とよばれる）
+      gender: '男性',
+      unit: {},
+      language: '-',
+    }
+  },
+  // 演算した結果を取得する算出プロパティ
+  methods: {
+    domain() {
+      return this.url.split('//')[1].split('.')[0]
+    },
+    fire() {
+      console.log(this.message);
+      console.log(this.url);
+      this.time = new Date().toLocaleTimeString()
+    },
+    clearName() { this.name = '' },
+    clearAge() { this.age = '' }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

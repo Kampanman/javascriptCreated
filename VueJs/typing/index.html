@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- 
+    CDNはこちらのサイト↓から拝借しました。
+    https://jp.vuejs.org/v2/guide/installation.html
+   -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="title">
+      <h1></h1>
+      <div class="marker"></div>
+    </div>
+    <button class="startButton mb-20" v-if="startFlg != true" @click="gameStart">START</button>
+    <!-- 
+      v-ifのプロパティを設けることで、このボタンタグを表示させる条件を追加した。
+      @clickは、普通のJSでいうところの「onclick」に相当する。
+      メソッドの内容はnewVue内で定義してある通りである。
+     -->
+    <div v-if="startFlg">
+      <!-- startFlgが立っている時だけこの中身が表示されるようになっている -->
+      <div class="question mb-20">{{ current_question }}</div>
+      <div v-if="current_question_counts == question_counts" class="clear">Cleared!</div>
+      <div class="typeFormWrapper mb-20">
+        <input id="typeForm" v-model="typeBox" type="text" class="typeForm" v-if="current_question_counts != question_counts">
+      <!-- 
+          v-modelの設定をすることで、dataの変数に設定された値と同一の値をこの中に表示させることができる。
+          今回の場合は、「typeBox」内に設定した値が表示されるようになる。
+      -->
+      </div>
+      <div class="gaugeWrapper mb-20">
+        <div v-bind:style="styleObject" class="gauge"></div>
+      <!-- 
+          cssを編集したい場合は「v-bind」を設定する。
+          今回のように変数も設定できるが、その場合は「computed」エリア内で変数を定義する必要がある。
+      -->
+      </div>
+      <div>{{ current_question_counts }} / {{ question_counts }}</div>
+      <button class="startButton mb-20" v-if="current_question_counts == question_counts" @click="">Retry ?</button> 
+    </div>
+  </div>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      startFlg:'',
+      current_question:"", // 今現在の問題のこと
+      questions:[
+        'アイ～ン！',
+        'だっふんだッ！',
+        'そうです。ワダスが変なおじさんです。',
+      ],
+      typeBox:"",
+      current_question_counts:0,
+      question_counts:0,
+    },
+    computed:{
+      styleObject:function(){
+        questions = 3;
+        width = (100/questions) * this.current_question_counts + "%"
+        if(this.current_question_counts == questions){
+          color = '#03a9f4'
+        }else{
+          color = 'orange'
+        }
+        return{ // computedの場合は、必ずこのreturnで値を返す必要がある
+          'width':width,
+          'background-color':color // cssでの書き方
+        }
+      }
+    },
+    methods:{
+      gameStart:function(){
+        this.startFlg = true;
+        this.$nextTick(function(){
+          // このメソッドが動いた時に次のように動くよう設定できる
+          document.getElementById('typeForm').focus()
+        })
+      }
+    },
+    mounted:function(){ // 描画された時点で実行される、というもの。
+      this.current_question = this.questions[0];
+      this.question_counts = this.questions.length
+    },
+    watch:{ // データの値が切り替わるたびに動作が走るようになる。
+      typeBox:function(intoInput){ // typeBoxの値が切り替わるたびにこのメソッドが発動。
+        if(intoInput == this.current_question){
+          this.questions.splice(0,1); // 配列「questions」の中身を一つ消す設定
+          this.current_question = this.questions[0];
+          this.typeBox = '';
+          this.current_question_counts = this.current_question_counts + 1
+        }
+      }
+    }
+  })
+</script>
+<script>
+  const theme = 'Vue.js Typing Game';
+  document.title = theme;
+  document.querySelector('.title>h1').innerText = theme;
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+* {
+  /* 全体の初期化設定 */
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+body {font-size: 32px}
+
+.mb-20 {margin-bottom: 20px;}
+
+.container {
+  width:80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.title {
+  position: relative;
+  font-size: 48px;
+}
+
+.marker {
+  width: 100%;
+  height: 35%;
+  background-color: #d0caca;
+  position: absolute; /* こうすれば、マーカーを文字の上に載せることができる */
+  bottom: 5%;
+  z-index: -1;
+}
+
+.startButton {
+  background-color: #333;
+  color: #fff;
+  padding: 4px 60px;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.startButton:hover {
+  opacity: 0.7;
+}
+
+.question {
+  color: gray;
+}
+
+.clear {
+  color: aqua;
+}
+
+.typeForm {
+  text-align: center;
+  outline: none;
+  border: none;
+}
+.typeFormWrapper {
+  border-bottom: 1px solid gray;
+}
+
+.gauge {
+  height: 12px;
+  transition: all 0.3s ease;
+}
+
+.gaugeWrapper {
+  border: 1px solid;
+  border-radius: 5px;
+}

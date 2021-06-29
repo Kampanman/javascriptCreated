@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #container {
+      width: 80%;
+      margin: 0 auto;
+    }
+    #infoMessage, .currentNum {
+      color: red;
+      font-weight: 600;
+    }
+    #hideAppear { display: none }
+    table {
+      width: 60%;
+      margin: 0 auto;
+      text-align: center;
+      margin-top: 3em;
+    }
+    tr { height: 2em }
+    button, td { 
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    button { border-radius: 10px }
+    td:hover { background: yellow }
+    table, button:hover { transform: scale(1.2) }
+  </style>
+</head>
+<body>
+  <div id="container" align="center">
+    <h2></h2>
+    <p>
+      <p id="infoMessage">ゲームスタートボタンを押してね。</p>
+      <button id="start" onclick="takeShuffle()">ゲームスタート</button>
+    </p>
+    <div id="hideAppear">
+      <input type="hidden" id="timer">
+      <p class="currentNum">次の数字：<span id="current" class="currentNum"></span></p>
+      <table border="1"></table>      
+    </div>
+  </div>
+
+  <script>
+    document.title = 'パネルナンバーカウントゲーム';
+    document.querySelector('#container > h2').innerText = document.title;
+    // テーブル内に tr > td を追加
+    var table = document.querySelector('table');
+    for(let i=0;i<10;i++){
+      var tr = document.createElement('tr');
+      table.appendChild(tr);
+      for(let j=0;j<5;j++){
+        var td = document.createElement('td');
+        tr.appendChild(td);
+      }
+    }
+
+    // 配列のシャッフル関数
+    const shuffle = ([...array]) => {
+      for (let i = array.length - 1; i >= 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // 配列の入れ物を作って数字を追加
+    let array = [];
+    var tds = document.querySelectorAll('td');
+    for(let i=1;i<tds.length+1;i++){
+      array.push(i);
+    }
+
+    var currentNum = 1;
+    var current = document.getElementById('current');
+    current.innerText = currentNum;
+
+    function takeShuffle(){
+      document.getElementById('hideAppear').style.display = 'block';
+      document.getElementById('infoMessage').innerText = '数字を「１」から順番にクリックして消していこう。';
+
+      // 配列の中身をシャッフル
+      var sd_array = shuffle(array);
+      // シャッフルした配列の中身を各マス目内に代入
+      var tds = document.querySelectorAll('td');
+      var times = 0;
+      for(let td of tds){
+        td.innerText = sd_array[times];
+        times++
+      }
+
+      var start = document.getElementById('start');
+      start.innerText = 'リトライ';
+      start.setAttribute('onclick','location.reload()');
+      var timer = document.getElementById('timer');
+      time = 0;
+      var current = document.getElementById('current');
+      var timeCount = setInterval(function(){
+        time++;
+        timer.value = time;
+      },1000);
+      
+      for(let td of tds){
+        td.addEventListener('click',function(){
+          if(Number(current.innerText)>tds.length){
+            clearTimeout(timeCount);
+          }       
+        })
+      }
+    }
+
+    var tds = document.querySelectorAll('td');
+    var currentNum = 1;
+    var current = document.getElementById('current');
+    for(let td of tds){
+      td.addEventListener('click',function(){
+        if(Number(td.innerText)==currentNum){
+          currentNum++;
+          current.innerText = currentNum;
+          if(currentNum>tds.length){
+            document.getElementById('infoMessage').innerText = '終了！ナイスファイト！';
+            document.querySelector('.currentNum').innerHTML = '';
+            setInterval(function(){
+              document.querySelector('.currentNum').innerHTML = `かかった時間：${timer.value}秒`;
+            },1000);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+
+#setting { margin:1em }
+#screen, #answer, #correct, #invalid, #reload { display:none }
+p, label { font-weight: 600 }
+#current, #correct, #correctNum { font-size: 25px }
+#correct { color:red }
+#invalid { color:purple }
+button {
+  border-radius: 10px;
+  cursor: pointer;
+}
