@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body, button, [type=text] {color: springgreen}
+    body { background-color: #080a40 }
+    [type=text] { background-color: darkslategrey }
+    button {
+      border-radius: 5px;
+      background-color: darkblue;
+      cursor: pointer;
+    }
+    #failedOpen {
+      display: none;
+      color: red;
+      font-weight: 600;
+    }
+    [type=checkbox] { transform: scale(1.2) }
+  </style>
+</head>
+<body>
+  <div id="container" align="center">
+    <h2 id="theme"></h2>
+    <p><button id="entireAccess" onclick="entireAccess()">以下のページに一括アクセスする</button></p>
+    <p id="failedOpen">ブラウザタブを１０以上開かないでください。</p>
+    <p><button id="entireClear" onclick="entireClear()">すべてのチェックを外す</button></p>
+  </div>
+  <ul id="links"></ul>
+  <script>
+    document.title = 'お気に入りサイト 一括アクセスガジェット';
+    document.getElementById('theme').innerText = document.title;
+
+    var accessedFlag = 0;
+    function intoForm(id,title,linkHref){
+      var linksUl = document.getElementById('links');
+      var newLi = document.createElement('li');
+      newLi.setAttribute('id','li_'+id);
+      newLi.style.margin = '5px';
+      linksUl.appendChild(newLi);
+
+      var liLabel = document.createElement('label');
+      liLabel.setAttribute('for','checking_'+id);
+      liLabel.innerText = title+"：";
+      liLabel.style.fontWeight = "600";
+      var parentOfInput = document.getElementById('li_'+id);
+      parentOfInput.appendChild(liLabel);
+
+      var checkBox = document.createElement('input');
+      checkBox.setAttribute('type','checkBox');
+      checkBox.setAttribute('id','checking_'+id);
+      checkBox.checked = true;
+      checkBox.style.marginRight = '5px';
+      parentOfInput.appendChild(checkBox);
+
+      var inputBox = document.createElement('input');
+      inputBox.setAttribute('id',id);
+      inputBox.setAttribute('type','text');
+      inputBox.style.borderRadius = '5px';
+      inputBox.readOnly = true;
+      inputBox.value = linkHref;
+      inputBox.style.width = inputBox.value.length * 1/2 + 'em';
+      inputBox.style.maxWidth = '70%';
+      parentOfInput.appendChild(inputBox);
+    }
+
+    function entireAccess(){
+      if(accessedFlag!=0){
+        return
+      }else{
+        var hrefs = document.querySelectorAll('[type=checkbox]:checked');
+        if(hrefs.length>9){
+          document.getElementById('failedOpen').style.display = 'block';
+          document.getElementById('entireAccess').innerText = '画面を更新する';
+          document.getElementById('entireAccess').setAttribute('onclick','location.reload()');          
+        }else{
+          for(let ref of hrefs){
+            var v_ref = ref.nextSibling.value;
+            ref.setAttribute('value',v_ref);
+            window.open(v_ref,'_blank')
+          }
+        }
+        accessedFlag++
+        document.getElementById('entireAccess').innerText = '画面を更新する';
+        document.getElementById('entireAccess').setAttribute('onclick','location.reload()');
+      }
+    }
+    function entireClear(){
+      document.getElementById('entireAccess').disabled = false;
+      document.getElementById('entireAccess').style.cursor = 'pointer';
+      var checked = document.querySelectorAll('[type=checkbox]:checked');
+      for(let ch of checked){
+        ch.checked = false;
+        ch.previousElementSibling.style.textShadow = '';
+      }
+    }
+
+    // 一括アクセスしたいウェブページは、ここに追加して下さい。
+    var linkArray = [
+      // ['',''],
+      // ['',''],
+      // ['',''],
+    ];
+
+    for(let i=0;i<linkArray.length;i++){
+      intoForm('add_'+(i+1),linkArray[i][0],linkArray[i][1]);
+    }
+    var checkers = document.querySelectorAll('[type=checkbox]');
+    for(let chk of checkers){
+      chk.addEventListener('change',function(){
+        if(chk.checked==true){
+          chk.previousElementSibling.style.textShadow = '2px 2px 2px yellow'
+        }else{
+          chk.previousElementSibling.style.textShadow = '';
+        } ;
+      });
+    }
+    var lists = document.querySelectorAll('li');
+    if(lists.length>9){ 
+      document.getElementById('entireAccess').disabled = true;
+      document.getElementById('entireAccess').style.cursor = 'not-allowed';
+    }
+  </script>
+</body>
+</html>
