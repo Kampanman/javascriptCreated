@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajax 1 - Text File</title>
+</head>
+<body>
+  <button id="button">Get Text File</button>
+  <p id="getRequest"></p>
+
+<script>
+  function _(id){ return document.getElementById(id); }  
+  function loadText(){
+    // create XHR object
+    var xhr = new XMLHttpRequest();
+    // OPEN - type, url/file, async
+    xhr.open("GET", "sample.txt", true);
+    // OPTIONAL - used for loaders
+    xhr.onprogress = function(){
+      console.log("【onprogress】READYSTATE: ",xhr.readyState);
+    }
+
+    xhr.onreadystatechange = function(){
+      console.log("【onreadystatechange】READYSTATE: ",xhr.readyState);
+      if(this.readyState==4 && this.status==200){
+        _("getRequest").innerText = this.responseText;
+      }else if(this.status==404){
+        _("getRequest").innerText = "Oops! Not found ...";
+      }
+    }
+    xhr.onerror = function(){
+      console.log("Request error ...");
+    }
+
+    // Sends request
+    xhr.send();
+
+    // HTTP Statuses
+    /*
+      200: OK
+      403: Forbidden
+      404: Not Found
+    */
+    // readyState Values
+    /*
+      0: request not initialized
+      1: server connection established
+      2: request received
+      3: processing request
+      4: request finished and response is ready
+    */
+  }
+
+  _("button").addEventListener('click',loadText);
+</script>
+</body>
+</html>
