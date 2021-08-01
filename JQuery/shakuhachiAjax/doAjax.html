@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- bootstrap5を導入 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #indexGet {
+      background-color: lavender;
+      border-radius: 5px;
+      padding: 5px;
+    }
+  </style>
+  <title>SHAKUHACHI AJAX</title>
+</head>
+<body>
+  <section id="mokujiContainer" class="container">
+    <p></p>
+    <h2 id="mokuji">目次</h2>
+    <nav id="indexGet" aria-label="breadcrumb"></nav>
+  </section>
+  <p></p>
+  <div id="ajaxGet" class="container p-2 rounded bg-primary text-white d-none"></div>
+<script src="./logics.js"></script>
+<script>
+  let getArray;
+  const xhr = new XMLHttpRequest();
+  xhr.onload = function(){
+    if(this.status == 200){
+      try{
+        const resObj = JSON.parse(this.responseText);
+        getArray = resObj;
+
+        setAjaxInfo("尺八 - Wikipedia","wikipedia");
+        setAjaxInfo("尺八とは？種類や歴史、流派をご紹介！","wagokoro_shakuhachi");
+
+        var bcItem = document.querySelectorAll(".note");
+        for(let item of bcItem){
+          item.addEventListener("click",function(){
+            for(let i in getArray){
+              if(getArray[i]["title"]==this.dataset.title && getArray[i]["from"]==this.dataset.from){
+                if(_("ajaxGet").getAttribute("class").indexOf("d-none")!=-1){
+                  _("ajaxGet").classList.remove("d-none");
+                }
+                _("ajaxGet").innerHTML = "<div><br></div><h2 align='center'>ちょっとまってネ ...</h2><div><br></div>";
+                _("ajaxGet").style.backgroundColor = "";
+                setTimeout(function(){
+                  _("ajaxGet").innerHTML = "";
+                  _("ajaxGet").innerHTML += `<h2>${getArray[i]["title"]}</h2>`;
+                  _("ajaxGet").innerHTML += `<p id="ajaxGetNote"></p>`;
+                  _("ajaxGetNote").innerText = getArray[i]["text"];
+                },1000);
+                break;
+              };
+            }
+          });
+        }
+      }catch(e){
+        console.log("There was an error in the JSON. Couldn't parse!");
+      }
+    }else{
+      console.log("Didn't receive 200 OK from responsive!");
+    }
+  };
+  xhr.open("get", "madeData.json");
+  xhr.send();
+</script>
+<!-- bootstrap5のJS -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+</body>
+</html>
