@@ -4,14 +4,26 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Jquery : Datatablesを導入 -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
   <!-- bootstrap5を導入 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    body { font-size: 1.8rem; }
     #indexGet {
       background-color: lavender;
       border-radius: 5px;
       padding: 5px;
+    }
+    .viewTube { cursor: pointer; }
+    .viewTube:hover {
+      font-weight: 600;
+      color: red;
     }
   </style>
   <title>SHAKUHACHI AJAX</title>
@@ -21,9 +33,22 @@
     <p></p>
     <h2 id="mokuji">目次</h2>
     <nav id="indexGet" aria-label="breadcrumb"></nav>
+    <p></p>
+    <table id="youtubeCorner" class="table table-bordered table-hover" >
+      <thead>
+        <tr>
+          <th>追加日</th>
+          <th>種別</th>
+          <th>動画タイトル</th>
+        </tr>
+      </thead>
+      <tbody id="youtubeList">
+      </tbody>
+    </table>
   </section>
   <p></p>
   <div id="ajaxGet" class="container p-2 rounded bg-primary text-white d-none"></div>
+  <div id="ajaxTubeGet" align="center" class="container p-2 d-none"></div>
 <script src="./logics.js"></script>
 <script>
   let getArray;
@@ -67,7 +92,37 @@
   };
   xhr.open("get", "madeData.json");
   xhr.send();
+
+  const dtxhr = new XMLHttpRequest();
+  dtxhr.onload = function(e){
+    if(this.status == 200){
+      try{
+        let tubesData = "";
+        var json_result = JSON.parse(this.response);
+        tubesData = json_result;
+        console.log("tubesData\n",tubesData);
+        
+        /**
+         * ajaxでPHPやJSONに載っているデータのテーブルへ埋め込み方法は、こちらのサイトのお世話になりました。
+         * ：https://arimo.hatenablog.com/entry/2013/07/09/114901
+         */
+        for(let i=0; i<tubesData.length; i++){
+          $('#youtubeCorner').dataTable().fnAddData([tubesData[i][0],tubesData[i][1],tubesData[i][2]]);
+          $("tbody>tr>td:last").attr('data-tubecode', tubesData[i][3]);
+          $("tbody>tr>td:last").attr('class', 'viewTube');
+        }
+
+      }catch(e){
+        console.log("There was an error in the JSON. Couldn't parse!");
+      }
+    }else{
+      console.log("Didn't receive 200 OK from responsive!");
+    }
+  };
+  dtxhr.open('get','./youtubeData.php',true);
+  dtxhr.send();
 </script>
+<script src="./datatableSetting.js"></script>
 <!-- bootstrap5のJS -->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
